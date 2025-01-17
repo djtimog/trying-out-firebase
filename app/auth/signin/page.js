@@ -21,7 +21,6 @@ export default function SignIn() {
       console.log('User signed in successfully');
       router.push('/'); // Redirect to a protected page after login
     } catch (err) {
-      console.error('Error signing in:', err.message);
       setError('Failed to sign in. Please check your email and password.');
     }
   };
