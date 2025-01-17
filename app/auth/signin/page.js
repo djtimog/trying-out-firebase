@@ -1,20 +1,36 @@
-'use client'
+'use client';
+
 import React, { useState } from 'react';
+import Link from "next/link";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { useRouter } from "next/navigation"; // Use Next.js router for redirection
+import { auth } from "../../firebaseConfig"; // Import your Firebase configuration
 
 export default function SignIn() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const router = useRouter();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Email:', email);
-    console.log('Password:', password);
+    setError(''); // Clear previous error
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      console.log('User signed in successfully');
+      router.push('/'); // Redirect to a protected page after login
+    } catch (err) {
+      console.error('Error signing in:', err.message);
+      setError('Failed to sign in. Please check your email and password.');
+    }
   };
 
   return (
-    <section className='flex h-[100vh] w-full justify-center items-center'>
-      <div className='w-max h-max'>
+    <section className='h-[100vh] w-full flex justify-center items-center'>
+      <div className=''>
         <form onSubmit={handleSubmit} className='space-y-4'>
+          {error && <p className="text-red-500 text-sm">{error}</p>}
           <div>
             <label htmlFor='email' className='block text-sm font-medium text-gray-700'>Email</label>
             <input 
@@ -41,10 +57,15 @@ export default function SignIn() {
             <input 
               type="submit" 
               className='mt-2 w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500' 
-              value="Submit"
+              value="Sign In"
             />
           </div>
         </form>
+      <div className="mt-4">
+        <Link href="/auth/signup" className="text-indigo-600 hover:underline">
+          CREATE an account
+        </Link>
+      </div>
       </div>
     </section>
   );
